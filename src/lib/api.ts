@@ -294,10 +294,14 @@ export const apiService = {
   getBlogs: async (): Promise<{ results: Blog[]; count: number }> => {
     try {
       const response = await api.get('/api/blogs/');
-      return {
-        results: response.data || [],
-        count: response.data?.length || 0
-      };
+      const data = response.data;
+      const results: Blog[] = Array.isArray(data)
+        ? data
+        : Array.isArray(data?.results)
+        ? data.results
+        : [];
+      const count: number = typeof data?.count === 'number' ? data.count : results.length;
+      return { results, count };
     } catch (error) {
       console.error('Error fetching blogs:', error);
       return { results: [], count: 0 };
@@ -317,7 +321,7 @@ export const apiService = {
   getRecentBlogs: async (): Promise<Blog[]> => {
     try {
       const response = await api.get('/api/blogs/recent/');
-      return response.data || [];
+      return Array.isArray(response.data) ? response.data : [];
     } catch (error) {
       console.error('Error fetching recent blogs:', error);
       return [];
@@ -338,10 +342,14 @@ export const apiService = {
   getProductPages: async (): Promise<{ results: ProductServicePage[]; count: number }> => {
     try {
       const response = await api.get('/api/product-pages/');
-      return {
-        results: response.data || [],
-        count: response.data?.length || 0
-      };
+      const data = response.data;
+      const results: ProductServicePage[] = Array.isArray(data)
+        ? data
+        : Array.isArray(data?.results)
+        ? data.results
+        : [];
+      const count: number = typeof data?.count === 'number' ? data.count : results.length;
+      return { results, count };
     } catch (error) {
       console.error('Error fetching product pages:', error);
       return { results: [], count: 0 };
@@ -361,7 +369,7 @@ export const apiService = {
   getRecentProductPages: async (): Promise<ProductServicePage[]> => {
     try {
       const response = await api.get('/api/product-pages/recent/');
-      return response.data || [];
+      return Array.isArray(response.data) ? response.data : [];
     } catch (error) {
       console.error('Error fetching recent product pages:', error);
       return [];
@@ -382,10 +390,14 @@ export const apiService = {
   getUsecases: async (): Promise<{ results: Usecase[]; count: number }> => {
     try {
       const response = await api.get('/api/usecases/');
-      return {
-        results: response.data || [],
-        count: response.data?.length || 0
-      };
+      const data = response.data;
+      const results: Usecase[] = Array.isArray(data)
+        ? data
+        : Array.isArray(data?.results)
+        ? data.results
+        : [];
+      const count: number = typeof data?.count === 'number' ? data.count : results.length;
+      return { results, count };
     } catch (error) {
       console.error('Error fetching usecases:', error);
       return { results: [], count: 0 };
@@ -405,7 +417,7 @@ export const apiService = {
   getRecentUsecases: async (): Promise<Usecase[]> => {
     try {
       const response = await api.get('/api/usecases/recent/');
-      return response.data || [];
+      return Array.isArray(response.data) ? response.data : [];
     } catch (error) {
       console.error('Error fetching recent usecases:', error);
       return [];
@@ -426,7 +438,10 @@ export const apiService = {
   getHomepage: async (): Promise<Homepage | null> => {
     try {
       const response = await api.get('/api/homepage/');
-      return response.data;
+      const data = response.data;
+      if (Array.isArray(data)) return data[0] || null;
+      if (Array.isArray(data?.results)) return data.results[0] || null;
+      return data || null;
     } catch (error) {
       console.error('Error fetching homepage:', error);
       return null;
@@ -436,7 +451,10 @@ export const apiService = {
   getAbout: async (): Promise<About | null> => {
     try {
       const response = await api.get('/api/about/');
-      return response.data;
+      const data = response.data;
+      if (Array.isArray(data)) return data[0] || null;
+      if (Array.isArray(data?.results)) return data.results[0] || null;
+      return data || null;
     } catch (error) {
       console.error('Error fetching about:', error);
       return null;
@@ -446,7 +464,10 @@ export const apiService = {
   getContact: async (): Promise<Contact | null> => {
     try {
       const response = await api.get('/api/contact/');
-      return response.data;
+      const data = response.data;
+      if (Array.isArray(data)) return data[0] || null;
+      if (Array.isArray(data?.results)) return data.results[0] || null;
+      return data || null;
     } catch (error) {
       console.error('Error fetching contact:', error);
       return null;
