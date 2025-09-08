@@ -59,12 +59,22 @@ export default function DynamicMetadata({
       {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
       
       {/* Schema.org */}
-      {schemaOrg && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: schemaOrg }}
-        />
-      )}
+      {(() => {
+        if (!schemaOrg) return null;
+        try {
+          const parsed = typeof schemaOrg === 'string' ? JSON.parse(schemaOrg) : schemaOrg;
+          const payload = Array.isArray(parsed) ? parsed : [parsed];
+          return payload.map((item, idx) => (
+            <script
+              key={idx}
+              type="application/ld+json"
+              dangerouslySetInnerHTML={{ __html: JSON.stringify(item) }}
+            />
+          ));
+        } catch {
+          return null;
+        }
+      })()}
     </Head>
   );
 }

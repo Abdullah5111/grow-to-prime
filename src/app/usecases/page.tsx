@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { apiService, Usecase } from '@/lib/api';
+import DynamicMetadata from '@/components/DynamicMetadata';
 import ContentCard from '@/components/ContentCard';
 import Pagination from '@/components/Pagination';
 
@@ -58,6 +59,30 @@ export default function UsecasesPage() {
 
   return (
     <div className="bg-white">
+      <DynamicMetadata
+        title="Usecases"
+        description="Real-world use cases"
+        ogType="website"
+        canonicalUrl={`${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/usecases`}
+        schemaOrg={JSON.stringify({
+          '@context': 'https://schema.org',
+          '@type': 'BreadcrumbList',
+          itemListElement: [
+            {
+              '@type': 'ListItem',
+              position: 1,
+              name: 'Home',
+              item: process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000',
+            },
+            {
+              '@type': 'ListItem',
+              position: 2,
+              name: 'Usecases',
+              item: `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/usecases`,
+            },
+          ],
+        })}
+      />
       <div className="mx-auto max-w-7xl px-6 lg:px-8 py-12">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Usecases</h1>

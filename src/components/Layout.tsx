@@ -189,6 +189,13 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                         </Menu.Items>
                       </Transition>
                     </Menu>
+
+                    <Link
+                      href="/ebook"
+                      className="ml-4 inline-flex items-center rounded-md bg-indigo-600 px-3.5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                    >
+                      Get E-Book
+                    </Link>
                   </div>
                 </div>
                 <div className="-mr-2 flex items-center sm:hidden">
@@ -216,6 +223,13 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                     {item.name}
                   </Disclosure.Button>
                 ))}
+                <Disclosure.Button
+                  as={Link}
+                  href="/ebook"
+                  className="block border-l-4 border-transparent py-2 pl-3 pr-4 text-base font-medium text-indigo-700 hover:border-indigo-300 hover:bg-indigo-50"
+                >
+                  Get E-Book
+                </Disclosure.Button>
               </div>
             </Disclosure.Panel>
           </>

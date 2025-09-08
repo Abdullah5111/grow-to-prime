@@ -1,6 +1,13 @@
 import axios from 'axios';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://django-backend-6216752961.us-central1.run.app';
+const getDefaultBaseUrl = () => {
+  if (typeof window !== 'undefined') return '';
+  const host = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:8000';
+  return host;
+};
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL
+  || (typeof window !== 'undefined' ? 'http://127.0.0.1:8000' : getDefaultBaseUrl());
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -477,7 +484,7 @@ export const apiService = {
   // Stats and Navigation
   getStats: async (): Promise<ContentStats> => {
     try {
-      const response = await api.get('/api/stats/');
+      const response = await api.get('/api/stats/stats/');
       return response.data;
     } catch (error) {
       console.error('Error fetching stats:', error);
@@ -492,7 +499,7 @@ export const apiService = {
 
   getNavigation: async (): Promise<Navigation> => {
     try {
-      const response = await api.get('/api/stats/');
+      const response = await api.get('/api/stats/navigation/');
       return {
         blogs: response.data?.blogs || [],
         product_pages: response.data?.product_pages || [],

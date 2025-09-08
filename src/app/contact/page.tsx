@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { apiService, Contact } from '@/lib/api';
+import DynamicMetadata from '@/components/DynamicMetadata';
 
 export default function ContactPage() {
   const [contact, setContact] = useState<Contact | null>(null);
@@ -52,6 +53,18 @@ export default function ContactPage() {
 
   return (
     <div className="bg-white">
+      <DynamicMetadata
+        title={contact?.meta_title || contact?.title || 'Contact'}
+        description={contact?.meta_description || contact?.description}
+        ogType="website"
+        canonicalUrl={`${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/contact`}
+        schemaOrg={JSON.stringify({
+          '@context': 'https://schema.org',
+          '@type': 'ContactPage',
+          name: contact?.title || 'Contact',
+          description: contact?.meta_description || contact?.description,
+        })}
+      />
       <div className="relative isolate px-6 pt-14 lg:px-8">
         <div className="mx-auto max-w-2xl py-32 sm:py-48 lg:py-56">
           <div className="text-center">

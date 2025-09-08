@@ -63,6 +63,12 @@ export default function ProductDetailPage() {
         twitterDescription={product?.twitter_description || product?.meta_description}
         twitterImage={product?.twitter_image}
         canonicalUrl={product?.canonical_url}
+        schemaOrg={JSON.stringify({
+          '@context': 'https://schema.org',
+          '@type': 'Service',
+          name: product?.title,
+          description: product?.meta_description || product?.excerpt,
+        })}
       />
       <div className="bg-white">
         <article className="py-24 sm:py-32">

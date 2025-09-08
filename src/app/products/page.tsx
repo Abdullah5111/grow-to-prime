@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { apiService, ProductServicePage } from '@/lib/api';
+import DynamicMetadata from '@/components/DynamicMetadata';
 import ContentCard from '@/components/ContentCard';
 import Pagination from '@/components/Pagination';
 
@@ -58,6 +59,30 @@ export default function ProductsPage() {
 
   return (
     <div className="bg-white">
+      <DynamicMetadata
+        title="Products"
+        description="Our products and services"
+        ogType="website"
+        canonicalUrl={`${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/products`}
+        schemaOrg={JSON.stringify({
+          '@context': 'https://schema.org',
+          '@type': 'BreadcrumbList',
+          itemListElement: [
+            {
+              '@type': 'ListItem',
+              position: 1,
+              name: 'Home',
+              item: process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000',
+            },
+            {
+              '@type': 'ListItem',
+              position: 2,
+              name: 'Products',
+              item: `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/products`,
+            },
+          ],
+        })}
+      />
       <div className="mx-auto max-w-7xl px-6 lg:px-8 py-12">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Product & Service Pages</h1>

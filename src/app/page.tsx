@@ -89,7 +89,12 @@ export default function HomePage() {
         twitterImage={homepage?.twitter_image}
         canonicalUrl={homepage?.canonical_url}
         robotsDirectives={homepage?.robots_directives}
-        schemaOrg={homepage?.schema_org}
+        schemaOrg={homepage?.schema_org || JSON.stringify({
+          '@context': 'https://schema.org',
+          '@type': 'WebPage',
+          name: homepage?.title_h1 || 'Home',
+          description: homepage?.meta_description || homepage?.subtitle,
+        })}
       />
       <div className="bg-white">
         <div className="relative isolate px-6 pt-14 lg:px-8">

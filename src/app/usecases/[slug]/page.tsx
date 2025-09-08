@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { apiService, Usecase } from '@/lib/api';
+import DynamicMetadata from '@/components/DynamicMetadata';
 
 export default function UsecaseDetailPage() {
   const params = useParams();
@@ -47,6 +48,28 @@ export default function UsecaseDetailPage() {
 
   return (
     <div className="bg-white">
+      <DynamicMetadata
+        title={usecase.meta_title || usecase.title}
+        description={usecase.meta_description || usecase.excerpt}
+        keywords={usecase.keywords}
+        ogTitle={usecase.og_title || usecase.title}
+        ogDescription={usecase.og_description || usecase.meta_description}
+        ogImage={usecase.og_image}
+        ogUrl={usecase.og_url}
+        ogType="article"
+        twitterCard={usecase.twitter_card}
+        twitterTitle={usecase.twitter_title || usecase.title}
+        twitterDescription={usecase.twitter_description || usecase.meta_description}
+        twitterImage={usecase.twitter_image}
+        canonicalUrl={usecase.canonical_url}
+        schemaOrg={JSON.stringify({
+          '@context': 'https://schema.org',
+          '@type': 'WebPage',
+          name: usecase.title,
+          datePublished: usecase.created_at,
+          dateModified: usecase.updated_at,
+        })}
+      />
       <article className="py-24 sm:py-32">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="mx-auto max-w-3xl">

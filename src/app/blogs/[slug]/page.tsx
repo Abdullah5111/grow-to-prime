@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { apiService, Blog } from '@/lib/api';
+import DynamicMetadata from '@/components/DynamicMetadata';
 
 export default function BlogDetailPage() {
   const params = useParams();
@@ -47,6 +48,28 @@ export default function BlogDetailPage() {
 
   return (
     <div className="bg-white">
+      <DynamicMetadata
+        title={blog.meta_title || blog.title}
+        description={blog.meta_description || blog.excerpt}
+        keywords={blog.keywords}
+        ogTitle={blog.og_title || blog.title}
+        ogDescription={blog.og_description || blog.meta_description}
+        ogImage={blog.og_image}
+        ogUrl={blog.og_url}
+        ogType="article"
+        twitterCard={blog.twitter_card}
+        twitterTitle={blog.twitter_title || blog.title}
+        twitterDescription={blog.twitter_description || blog.meta_description}
+        twitterImage={blog.twitter_image}
+        canonicalUrl={blog.canonical_url}
+        schemaOrg={JSON.stringify({
+          '@context': 'https://schema.org',
+          '@type': 'Article',
+          headline: blog.title,
+          datePublished: blog.created_at,
+          dateModified: blog.updated_at,
+        })}
+      />
       <article className="py-24 sm:py-32">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="mx-auto max-w-3xl">

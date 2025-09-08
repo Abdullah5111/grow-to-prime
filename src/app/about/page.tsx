@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { apiService, About } from '@/lib/api';
+import DynamicMetadata from '@/components/DynamicMetadata';
 
 export default function AboutPage() {
   const [about, setAbout] = useState<About | null>(null);
@@ -52,6 +53,18 @@ export default function AboutPage() {
 
   return (
     <div className="bg-white">
+      <DynamicMetadata
+        title={about?.meta_title || about?.title || 'About'}
+        description={about?.meta_description || about?.description}
+        ogType="website"
+        canonicalUrl={`${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/about`}
+        schemaOrg={JSON.stringify({
+          '@context': 'https://schema.org',
+          '@type': 'WebPage',
+          name: about?.title || 'About',
+          description: about?.meta_description || about?.description,
+        })}
+      />
       <div className="relative isolate px-6 pt-14 lg:px-8">
         <div className="mx-auto max-w-2xl py-32 sm:py-48 lg:py-56">
           <div className="text-center">
