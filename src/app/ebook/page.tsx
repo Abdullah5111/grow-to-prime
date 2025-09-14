@@ -2,6 +2,26 @@
 
 import { Suspense, useEffect, useMemo, useRef, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
+
+function readGaClientId(): string {
+  try {
+    const cookie = document.cookie.split('; ').find((c) => c.startsWith('_ga='))
+    if (!cookie) return ''
+    const value = cookie.split('=')[1]
+    const parts = value.split('.')
+    if (parts.length >= 4) return `${parts[2]}.${parts[3]}`
+    return value
+  } catch {
+    return ''
+  }
+}
+
+function trackEvent(name: string, params: Record<string, unknown> = {}): void {
+  try {
+    // @ts-expect-error optional global
+    if (typeof window !== 'undefined' && window.gtag) window.gtag('event', name, params)
+  } catch {}
+}
 // no imports needed
 
 const BASE_IFRAME_SRC = 'https://forms.zohopublic.eu/growtoprime1/form/LeadIntakeQuestionnaire/formperma/euqcqAMxa5PxiVWyqITbTGT9yVYnL-pIamMUZDDhGrk'
@@ -87,6 +107,7 @@ function EbookContent() {
               utm_term: utmParams.get('utm_term') || '',
               utm_content: utmParams.get('utm_content') || '',
               referrer: utmParams.get('referrer') || (typeof document !== 'undefined' ? document.referrer : ''),
+              client_id: typeof document !== 'undefined' ? readGaClientId() : '',
             }
             if (!payload.first_name || !payload.last_name || !payload.email || !payload.company || !payload.sector_size || !payload.interests) {
               alert('Please fill all required fields.')
@@ -96,9 +117,17 @@ function EbookContent() {
               alert('Privacy consent is required.')
               return
             }
+            
+            // Track form submission attempt
+            trackEvent('ebook_submit_attempt', { 
+              utm_source: payload.utm_source,
+              utm_campaign: payload.utm_campaign 
+            })
             const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'
             let retryCount = 0
             let ok = false
+            let responseData: { bookingUrl?: string; zohoLeadId?: string } | null = null
+            
             for (let attempt = 0; attempt < 3; attempt++) {
               try {
                 const res = await fetch(`${apiBase}/api/ebook-leads/`, {
@@ -109,11 +138,13 @@ function EbookContent() {
                 if (res.ok) {
                   ok = true
                   retryCount = attempt
+                  responseData = await res.json()
                   break
                 }
               } catch {}
               if (attempt < 2) await new Promise(r => setTimeout(r, 500 * (attempt + 1)))
             }
+            
             if (!ok) {
               try {
                 const key = 'ebookLeadFallbackQueue'
@@ -128,6 +159,19 @@ function EbookContent() {
             } else {
               alert(`Submitted successfully. retryCount=${retryCount}, fallbackUsed=false`)
               form.reset()
+              
+              // Track successful submission
+              trackEvent('ebook_submit_success', { 
+                has_booking_url: Boolean(responseData?.bookingUrl),
+                zoho_lead_id: responseData?.zohoLeadId 
+              })
+              
+              // Show booking link if available
+              if (responseData?.bookingUrl) {
+                if (confirm('Would you like to schedule a consultation?')) {
+                  window.open(responseData.bookingUrl, '_blank')
+                }
+              }
             }
           }}
         >
@@ -149,7 +193,7 @@ function EbookContent() {
               <span className="text-sm text-gray-700">I agree to receive marketing communications</span>
             </label>
           </div>
-          <button type="submit" className="mt-4 rounded bg-indigo-600 px-4 py-2 text-white">Submit locally</button>
+          <button type="submit" className="mt-4 rounded bg-indigo-600 px-4 py-2 text-white">Download eBook</button>
         </form>
         {mounted && (
           <iframe
