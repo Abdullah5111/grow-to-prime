@@ -191,8 +191,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                     </Menu>
 
                     <Link
-                      href="/ebook"
+                      href="/consultation"
                       className="ml-4 inline-flex items-center rounded-md bg-indigo-600 px-3.5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                    >
+                      Free Consultation
+                    </Link>
+                    <Link
+                      href="/ebook"
+                      className="ml-2 inline-flex items-center rounded-md bg-white px-3.5 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
                     >
                       Get E-Book
                     </Link>
@@ -225,8 +231,15 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 ))}
                 <Disclosure.Button
                   as={Link}
-                  href="/ebook"
+                  href="/consultation"
                   className="block border-l-4 border-transparent py-2 pl-3 pr-4 text-base font-medium text-indigo-700 hover:border-indigo-300 hover:bg-indigo-50"
+                >
+                  Free Consultation
+                </Disclosure.Button>
+                <Disclosure.Button
+                  as={Link}
+                  href="/ebook"
+                  className="block border-l-4 border-transparent py-2 pl-3 pr-4 text-base font-medium text-gray-700 hover:border-gray-300 hover:bg-gray-50"
                 >
                   Get E-Book
                 </Disclosure.Button>

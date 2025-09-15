@@ -1,6 +1,6 @@
 'use client'
 
-import { Suspense, useEffect, useMemo, useRef, useState } from 'react'
+import { Suspense, useEffect, useMemo } from 'react'
 import { useSearchParams } from 'next/navigation'
 
 function readGaClientId(): string {
@@ -24,12 +24,8 @@ function trackEvent(name: string, params: Record<string, unknown> = {}): void {
 }
 // no imports needed
 
-const BASE_IFRAME_SRC = 'https://forms.zohopublic.eu/growtoprime1/form/LeadIntakeQuestionnaire/formperma/euqcqAMxa5PxiVWyqITbTGT9yVYnL-pIamMUZDDhGrk'
-
 function EbookContent() {
   const searchParams = useSearchParams()
-  const iframeRef = useRef<HTMLIFrameElement | null>(null)
-  const [mounted, setMounted] = useState(false)
 
   const utmParams = useMemo(() => {
     const keys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content']
@@ -43,13 +39,7 @@ function EbookContent() {
     return new URLSearchParams(entries)
   }, [searchParams])
 
-  const iframeSrc = useMemo(() => {
-    const qs = utmParams.toString()
-    return qs ? `${BASE_IFRAME_SRC}?${qs}` : BASE_IFRAME_SRC
-  }, [utmParams])
-
   useEffect(() => {
-    setMounted(true)
     const key = 'ebookLeadFallbackQueue'
     try {
       const raw = localStorage.getItem(key)
@@ -195,14 +185,6 @@ function EbookContent() {
           </div>
           <button type="submit" className="mt-4 rounded bg-indigo-600 px-4 py-2 text-white">Download eBook</button>
         </form>
-        {mounted && (
-          <iframe
-            ref={iframeRef}
-            aria-label="Lead Intake Questionnaire"
-            style={{ height: 500, width: '100%', border: 'none' }}
-            src={iframeSrc}
-          />
-        )}
       </div>
     </div>
   )
