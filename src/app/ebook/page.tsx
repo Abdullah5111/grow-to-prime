@@ -18,8 +18,24 @@ function readGaClientId(): string {
 
 function trackEvent(name: string, params: Record<string, unknown> = {}): void {
   try {
+    // Send to GA4
     // @ts-expect-error optional global
     if (typeof window !== 'undefined' && window.gtag) window.gtag('event', name, params)
+    
+    // Send to database
+    const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'
+    fetch(`${apiBase}/api/analytics/events/`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        event_name: name,
+        form_type: params.form_type || 'ebook',
+        error_message: params.error_message || '',
+        user_data: params,
+        ga_client_id: readGaClientId(),
+        page_url: typeof window !== 'undefined' ? window.location.href : '',
+      })
+    }).catch(() => {}) // Silent fail
   } catch {}
 }
 // no imports needed
@@ -80,6 +96,7 @@ function EbookContent() {
           className="mb-10 space-y-4"
           onSubmit={async (e) => {
             e.preventDefault()
+            trackEvent('ebook_form_start', { form_type: 'ebook' })
             const form = e.currentTarget as HTMLFormElement
             const fd = new FormData(form)
             const payload = {
@@ -100,16 +117,19 @@ function EbookContent() {
               client_id: typeof document !== 'undefined' ? readGaClientId() : '',
             }
             if (!payload.first_name || !payload.last_name || !payload.email || !payload.company || !payload.sector_size || !payload.interests) {
+              trackEvent('ebook_form_error', { form_type: 'ebook', error_message: 'Missing required fields' })
               alert('Please fill all required fields.')
               return
             }
             if (!payload.privacy_consent) {
+              trackEvent('ebook_form_error', { form_type: 'ebook', error_message: 'Privacy consent required' })
               alert('Privacy consent is required.')
               return
             }
             
             // Track form submission attempt
-            trackEvent('ebook_submit_attempt', { 
+            trackEvent('ebook_form_submit', { 
+              form_type: 'ebook',
               utm_source: payload.utm_source,
               utm_campaign: payload.utm_campaign 
             })

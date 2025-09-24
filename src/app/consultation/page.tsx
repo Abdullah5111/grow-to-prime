@@ -44,8 +44,24 @@ function readGaClientId(): string {
 
 function trackEvent(name: string, params: Record<string, unknown> = {}): void {
   try {
+    // Send to GA4
     // @ts-expect-error optional global
     if (typeof window !== 'undefined' && window.gtag) window.gtag('event', name, params)
+    
+    // Send to database
+    const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'
+    fetch(`${apiBase}/api/analytics/events/`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        event_name: name,
+        form_type: params.form_type || 'consultation',
+        error_message: params.error_message || '',
+        user_data: params,
+        ga_client_id: readGaClientId(),
+        page_url: typeof window !== 'undefined' ? window.location.href : '',
+      })
+    }).catch(() => {}) // Silent fail
   } catch {}
 }
 
@@ -71,7 +87,7 @@ function ConsultationContent() {
   }, [searchParams])
 
   useEffect(() => {
-    trackEvent('consultation_step_view', { step })
+    trackEvent('consultation_step_view', { form_type: 'consultation', step })
   }, [step])
 
   const validateStep = (current: number): string | null => {
@@ -93,6 +109,7 @@ function ConsultationContent() {
   const next = () => {
     const err = validateStep(step)
     if (err) {
+      trackEvent('consultation_form_error', { form_type: 'consultation', error_message: err, step })
       setError(err)
       return
     }
@@ -108,11 +125,13 @@ function ConsultationContent() {
   const handleSubmit = async () => {
     const err = validateStep(4)
     if (err) {
+      trackEvent('consultation_form_error', { form_type: 'consultation', error_message: err, step: 4 })
       setError(err)
       return
     }
     setError(null)
     setSubmitting(true)
+    trackEvent('consultation_form_submit', { form_type: 'consultation' })
     try {
       const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'
       const payload = {
@@ -125,7 +144,7 @@ function ConsultationContent() {
         referrer: utmParams['referrer'] || (typeof document !== 'undefined' ? document.referrer : ''),
         client_id: typeof document !== 'undefined' ? readGaClientId() : '',
       }
-      trackEvent('consultation_submit', { lead_quality_preview: 'auto' })
+      trackEvent('consultation_submit', { form_type: 'consultation', lead_quality_preview: 'auto' })
       const res = await fetch(`${apiBase}/api/consultations/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -137,9 +156,11 @@ function ConsultationContent() {
       }
       const data = await res.json()
       setDone({ bookingUrl: data.bookingUrl || '', leadId: data.id })
-      trackEvent('consultation_booking_link', { has_booking_url: Boolean(data.bookingUrl) })
+      trackEvent('consultation_booking_link', { form_type: 'consultation', has_booking_url: Boolean(data.bookingUrl) })
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Submission failed')
+      const errorMsg = e instanceof Error ? e.message : 'Submission failed'
+      trackEvent('consultation_form_error', { form_type: 'consultation', error_message: errorMsg })
+      setError(errorMsg)
     } finally {
       setSubmitting(false)
     }

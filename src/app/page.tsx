@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { apiService, Homepage } from '@/lib/api';
 import FAQ from '@/components/FAQ';
 import DynamicMetadata from '@/components/DynamicMetadata';
+import { trackPageView } from '@/lib/analytics';
 
 export default function HomePage() {
   const [homepage, setHomepage] = useState<Homepage | null>(null);
@@ -24,6 +25,7 @@ export default function HomePage() {
     };
 
     fetchData();
+    trackPageView();
   }, []);
 
   const parseHomepageFAQ = (faqText: string) => {
