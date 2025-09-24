@@ -19,7 +19,6 @@ function readGaClientId(): string {
 function trackEvent(name: string, params: Record<string, unknown> = {}): void {
   try {
     // Send to GA4
-    // @ts-expect-error optional global
     if (typeof window !== 'undefined' && window.gtag) window.gtag('event', name, params)
     
     // Send to database

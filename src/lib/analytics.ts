@@ -1,4 +1,10 @@
 // Analytics utility functions
+declare global {
+  interface Window {
+    gtag?: (command: string, targetId: string, config?: Record<string, unknown>) => void;
+  }
+}
+
 export function trackPageView(pageTitle?: string, pageLocation?: string) {
   try {
     if (typeof window !== 'undefined' && window.gtag) {
