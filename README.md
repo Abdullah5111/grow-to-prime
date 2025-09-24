@@ -1,10 +1,11 @@
 # Grow to Prime - Frontend
 
-This is the frontend application for the AI Generated Leader project, built with Next.js and designed to work with the Django backend deployed on Google Cloud Run.
+This is frontend application for the AI Generated Leader project, built with Next.js and designed to work with the Django backend deployed on Google Cloud Run.
 
 ## 🚀 Quick Deploy to Vercel
 
 ### Option 1: Deploy with Vercel CLI
+
 ```bash
 # Install Vercel CLI
 npm i -g vercel
@@ -14,6 +15,7 @@ vercel --prod
 ```
 
 ### Option 2: Deploy via GitHub
+
 1. Push this code to a GitHub repository
 2. Connect your GitHub repo to Vercel
 3. Vercel will automatically deploy
