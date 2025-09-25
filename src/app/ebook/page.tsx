@@ -310,9 +310,14 @@ function EbookContent() {
           })();
 
           function checkMandatory886339000000817757(){
+            console.log('🚀 FORM VALIDATION STARTED');
+            
             // Anti-bot: honeypot deve restare vuoto
             var hp = document.querySelector('input[name="aG9uZXlwb3Q"]');
-            if(hp && hp.value){ return false; }
+            if(hp && hp.value){ 
+              console.log('❌ Honeypot filled - bot detected');
+              return false; 
+            }
 
             var mndFileds = new Array('Company','Last Name');
             var fldLangVal = new Array('Società','Cognome');
@@ -321,15 +326,18 @@ function EbookContent() {
               if(fieldObj){
                 if(((fieldObj.value).replace(/^\\s+|\\s+$/g,'' )).length == 0){
                   if(fieldObj.type == 'file'){ alert('Selezionare un file da caricare.'); fieldObj.focus(); return false; }
+                  console.log('❌ Required field empty:', fldLangVal[i]);
                   alert(fldLangVal[i] + ' non può essere vuoto.');
                   fieldObj.focus(); return false;
                 }else if(fieldObj.nodeName == 'SELECT'){
                   if(fieldObj.options[fieldObj.selectedIndex].value == '-None-'){
+                    console.log('❌ Required select field empty:', fldLangVal[i]);
                     alert(fldLangVal[i] + ' non può essere nessuno.');
                     fieldObj.focus(); return false;
                   }
                 }else if(fieldObj.type == 'checkbox'){
                   if(fieldObj.checked == false){
+                    console.log('❌ Required checkbox not checked:', fldLangVal[i]);
                     alert('Please accept ' + fldLangVal[i]);
                     fieldObj.focus(); return false;
                   }
@@ -337,11 +345,40 @@ function EbookContent() {
                 try{ if(fieldObj.name == 'Last Name'){ name = fieldObj.value; } }catch(e){}
               }
             }
-            if(!validateEmail886339000000817757()){ return false; }
-            if(!privacyAlert886339000000817757()){ return false; }
+            if(!validateEmail886339000000817757()){ 
+              console.log('❌ Email validation failed');
+              return false; 
+            }
+            if(!privacyAlert886339000000817757()){ 
+              console.log('❌ Privacy consent not accepted');
+              return false; 
+            }
+
+            console.log('✅ All validations passed');
+
+            // Collect all form data for logging
+            var form = document.getElementById('webform886339000000817757');
+            var formData = new FormData(form);
+            var formDataObj = {};
+            
+            console.log('📋 FORM DATA BEING SENT TO ZOHO:');
+            for (var pair of formData.entries()) {
+              formDataObj[pair[0]] = pair[1];
+              console.log('  ' + pair[0] + ': ' + pair[1]);
+            }
+            
+            // Log URL parameters being added
+            var urlparams = new URLSearchParams(window.location.search);
+            console.log('🔗 URL PARAMETERS:');
+            console.log('  utm_source:', urlparams.get('utm_source'));
+            console.log('  utm_medium:', urlparams.get('utm_medium'));
+            console.log('  utm_campaign:', urlparams.get('utm_campaign'));
+            console.log('  utm_term:', urlparams.get('utm_term'));
+            console.log('  utm_content:', urlparams.get('utm_content'));
+            console.log('  ebook:', urlparams.get('ebook'));
+            console.log('  referrer:', document.referrer);
 
             // Conserva eventuale parametro "service=smarturl" già previsto
-            var urlparams = new URLSearchParams(window.location.search);
             if(urlparams.has('service') && (urlparams.get('service') === 'smarturl')){
               var webform = document.getElementById('webform886339000000817757');
               var service = urlparams.get('service');
@@ -350,6 +387,7 @@ function EbookContent() {
               smarturlfield.setAttribute('value',service);
               smarturlfield.setAttribute('name','service');
               webform.appendChild(smarturlfield);
+              console.log('➕ Added service parameter:', service);
             }
 
             // Imposta dinamicamente la thank-you page con parametro ebook (se presente)
@@ -358,10 +396,18 @@ function EbookContent() {
             if(retField){
               var baseThanks = 'https://www.growtoprime.com/thanks';
               retField.value = ebook ? (baseThanks + '?ebook=' + encodeURIComponent(ebook)) : baseThanks;
+              console.log('🎯 Thank you page set to:', retField.value);
             }
+
+            // Log final form action
+            console.log('📤 FORM SUBMISSION DETAILS:');
+            console.log('  Action URL:', form.action);
+            console.log('  Method:', form.method);
+            console.log('  Form ID:', form.id);
 
             // Disabilita bottone per evitare doppie submit e CONSENTI l'invio
             document.querySelector('.crmWebToEntityForm .formsubmit').setAttribute('disabled', true);
+            console.log('✅ FORM WILL NOW SUBMIT TO ZOHO CRM');
             return true; /* FIX fondamentale: permette la submit */
           }
 
