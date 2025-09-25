@@ -2,7 +2,6 @@
 
 import { Suspense, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
-import Script from 'next/script'
 
 // readGaClientId function removed as it's not used in the Zoho form implementation
 
@@ -66,16 +65,16 @@ function EbookContent() {
   // Ensure form initialization after component mounts
   useEffect(() => {
     const initializeForm = () => {
-      const ebookField = document.getElementById('LEADCF24')
+      const ebookField = document.getElementById('LEADCF24') as HTMLInputElement
       if (ebookField && !ebookField.value) {
         console.log('📚 Setting ebook field from React:', ebookDisplayName)
         ebookField.value = ebookDisplayName
       }
       
       // Re-run the initialization function from the script
-      if (typeof (window as any).initializeFormData === 'function') {
+      if (typeof (window as unknown as { initializeFormData?: () => void }).initializeFormData === 'function') {
         console.log('🔄 Re-running form initialization...')
-        ;(window as any).initializeFormData()
+        ;(window as unknown as { initializeFormData: () => void }).initializeFormData()
       }
     }
 
