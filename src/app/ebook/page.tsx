@@ -63,6 +63,27 @@ function EbookContent() {
     }
   }, [])
 
+  // Ensure form initialization after component mounts
+  useEffect(() => {
+    const initializeForm = () => {
+      const ebookField = document.getElementById('LEADCF24')
+      if (ebookField && !ebookField.value) {
+        console.log('📚 Setting ebook field from React:', ebookDisplayName)
+        ebookField.value = ebookDisplayName
+      }
+      
+      // Re-run the initialization function from the script
+      if (typeof (window as any).initializeFormData === 'function') {
+        console.log('🔄 Re-running form initialization...')
+        ;(window as any).initializeFormData()
+      }
+    }
+
+    // Run after a short delay to ensure the form HTML is rendered
+    const timer = setTimeout(initializeForm, 100)
+    return () => clearTimeout(timer)
+  }, [ebookDisplayName])
+
   return (
     <div className="bg-white">
       <div className="mx-auto max-w-4xl px-6 py-16">
@@ -281,13 +302,22 @@ function EbookContent() {
           }
 
           // Autopopolazione UTM + referrer + ebook (se passato in URL)
-          (function(){
+          function initializeFormData() {
+            console.log('🔄 Initializing form data...');
             var form = document.getElementById('webform886339000000817757');
-            if(!form) return;
+            if(!form) {
+              console.log('❌ Form not found');
+              return;
+            }
+            
             var params = new URLSearchParams(window.location.search);
+            console.log('📋 URL Parameters found:', Object.fromEntries(params.entries()));
+            
+            // Add UTM parameters
             ['utm_source','utm_medium','utm_campaign','utm_term','utm_content'].forEach(function(k){
               var v = params.get(k);
               if(v){
+                console.log('➕ Adding UTM parameter:', k, '=', v);
                 var input = document.createElement('input');
                 input.type = 'hidden';
                 input.name = k;
@@ -295,19 +325,44 @@ function EbookContent() {
                 form.appendChild(input);
               }
             });
+            
+            // Add referrer
             var ref = document.referrer || params.get('ref') || '';
             if(ref){
+              console.log('➕ Adding referrer:', ref);
               var r = document.createElement('input');
               r.type = 'hidden';
               r.name = 'referrer';
               r.value = ref;
               form.appendChild(r);
             }
+            
+            // Set ebook field from URL parameter
             var ebookField = document.getElementById('LEADCF24');
-            if(ebookField && !ebookField.value && params.get('ebook')){
-              ebookField.value = params.get('ebook');
+            var ebookParam = params.get('ebook');
+            if(ebookParam){
+              console.log('📚 Setting ebook field to:', ebookParam);
+              ebookField.value = ebookParam;
+            } else {
+              // Fallback to ebookDisplayName from React
+              var ebookDisplayName = '${ebookDisplayName}';
+              if(ebookDisplayName && ebookDisplayName !== '${ebookDisplayName}'){
+                console.log('📚 Setting ebook field to display name:', ebookDisplayName);
+                ebookField.value = ebookDisplayName;
+              }
             }
-          })();
+            
+            console.log('✅ Form data initialization complete');
+          }
+          
+          // Expose function to window for React to call
+          window.initializeFormData = initializeFormData;
+          
+          // Run immediately and also when DOM is ready
+          initializeFormData();
+          if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeFormData);
+          }
 
           function checkMandatory886339000000817757(){
             console.log('🚀 FORM VALIDATION STARTED');
