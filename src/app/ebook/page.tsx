@@ -80,7 +80,7 @@ function EbookContent() {
     name="WebToLeads886339000000817757" 
     method="POST" 
     onSubmit={() => {
-      return (window as any).checkMandatory886339000000817757();
+      return (window as { checkMandatory886339000000817757?: () => boolean }).checkMandatory886339000000817757?.() ?? true;
     }}
     acceptCharset="UTF-8"
   >
@@ -156,7 +156,7 @@ function EbookContent() {
       <div className="zcwf_col_fld">
         <input 
           type="text" 
-          {...({ ftype: "email" } as any)}
+          {...({ ftype: "email" } as Record<string, string>)}
           autoComplete="false"
           id="Email" 
           aria-required="false" 

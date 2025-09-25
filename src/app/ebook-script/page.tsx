@@ -1,6 +1,6 @@
 'use client'
 
-import { Suspense, useEffect, useMemo, useState } from 'react'
+import { Suspense, useEffect, useMemo, useState, useCallback } from 'react'
 import { useSearchParams } from 'next/navigation'
 
 function readGaClientId(): string {
@@ -59,7 +59,7 @@ function EbookScriptContent() {
   const ebookDisplayName = ebookName.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
 
   // Build Zoho WebToLead form URL with parameters
-  const buildZohoFormUrl = () => {
+  const buildZohoFormUrl = useCallback(() => {
     const baseUrl = 'https://crm.zoho.eu/crm/WebToLeadForm'
     const params = new URLSearchParams()
     
@@ -75,7 +75,7 @@ function EbookScriptContent() {
     })
     
     return `${baseUrl}?${params.toString()}`
-  }
+  }, [ebookDisplayName, utmParams])
 
   useEffect(() => {
     // Track page view
