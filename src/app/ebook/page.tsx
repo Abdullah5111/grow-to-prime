@@ -155,9 +155,9 @@ function EbookContent() {
       </div>
       <div className="zcwf_col_fld">
         <input 
-          type="text" 
+          type="email" 
           {...({ ftype: "email" } as Record<string, string>)}
-          autoComplete="false"
+          autoComplete="off"
           id="Email" 
           aria-required="false" 
           aria-label="Email" 
@@ -357,6 +357,10 @@ function EbookContent() {
     }
 
     function checkMandatory886339000000817757() {
+      // Anti-bot: honeypot deve restare vuoto
+      var hp = document.querySelector('input[name="aG9uZXlwb3Q"]');
+      if (hp && hp.value) { return false; }
+
       var mndFileds = new Array('Company', 'Last Name');
       var fldLangVal = new Array('Società', 'Cognome');
       for (i = 0; i < mndFileds.length; i++) {
@@ -433,7 +437,9 @@ function EbookContent() {
         webform.appendChild(smarturlfield);
       }
       
+      // Disabilita bottone per evitare doppie submit e CONSENTI l'invio
       document.querySelector('.crmWebToEntityForm .formsubmit').setAttribute('disabled', true);
+      return true; /* FIX fondamentale: permette la submit */
     }
 
     function tooltipShow886339000000817757(el) {
