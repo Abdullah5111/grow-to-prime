@@ -24,29 +24,43 @@ function EbookContent() {
       if (!raw) return
       const items: Record<string, unknown>[] = JSON.parse(raw)
       if (!Array.isArray(items) || items.length === 0) return
+      console.log('Processing fallback queue with', items.length, 'items')
+      
       const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'
       const resend = async () => {
         const remaining: Record<string, unknown>[] = []
         for (const item of items) {
           try {
+            console.log('Attempting to resend fallback item:', item)
             const res = await fetch(`${apiBase}/api/ebook-leads/`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify(item),
             })
-            if (!res.ok) remaining.push(item)
-          } catch {
+            console.log('Fallback API response status:', res.status)
+            if (!res.ok) {
+              console.log('Fallback API failed, keeping item for retry')
+              remaining.push(item)
+            } else {
+              console.log('Fallback API success')
+            }
+          } catch (error) {
+            console.error('Fallback API error:', error)
             remaining.push(item)
           }
         }
         if (remaining.length > 0) {
+          console.log('Storing', remaining.length, 'failed items for retry')
           localStorage.setItem(key, JSON.stringify(remaining))
         } else {
+          console.log('All fallback items processed successfully')
           localStorage.removeItem(key)
         }
       }
       resend()
-    } catch {}
+    } catch (error) {
+      console.error('Error processing fallback queue:', error)
+    }
   }, [])
 
   return (
@@ -66,11 +80,8 @@ function EbookContent() {
     name="WebToLeads886339000000817757" 
     method="POST" 
     onSubmit={() => {
-      if (typeof window !== 'undefined') {
-        return (window as { checkMandatory886339000000817757?: () => boolean }).checkMandatory886339000000817757?.() ?? false;
-      }
-      return false;
-    }} 
+      return (window as any).checkMandatory886339000000817757();
+    }}
     acceptCharset="UTF-8"
   >
     {/* Hidden fields required by Zoho */}
@@ -144,7 +155,9 @@ function EbookContent() {
       </div>
       <div className="zcwf_col_fld">
         <input 
-          type="email" 
+          type="text" 
+          {...({ ftype: "email" } as any)}
+          autoComplete="false"
           id="Email" 
           aria-required="false" 
           aria-label="Email" 
@@ -326,7 +339,7 @@ function EbookContent() {
 
     function validateEmail886339000000817757() {
       var form = document.forms['WebToLeads886339000000817757'];
-      var emailFld = form.querySelectorAll('[type=email]');
+      var emailFld = form.querySelectorAll('[ftype=email]');
       var i;
       for (i = 0; i < emailFld.length; i++) {
         var emailVal = emailFld[i].value;
