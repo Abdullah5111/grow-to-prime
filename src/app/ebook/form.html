@@ -1,46 +1,4 @@
-'use client'
-
-import { Suspense, useEffect, useRef } from 'react'
-import { useSearchParams } from 'next/navigation'
-
-function EbookContent() {
-  const searchParams = useSearchParams()
-  const iframeRef = useRef<HTMLIFrameElement>(null)
-
-  const ebookName = searchParams.get('ebook') || 'AI Content Generation Guide'
-  const ebookDisplayName = ebookName.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
-
-  useEffect(() => {
-    // Send ebook name to iframe when it loads
-    const iframe = iframeRef.current
-    if (iframe) {
-      const handleLoad = () => {
-        iframe.contentWindow?.postMessage({
-          type: 'setEbookName',
-          value: ebookDisplayName
-        }, '*')
-      }
-
-      iframe.addEventListener('load', handleLoad)
-      return () => iframe.removeEventListener('load', handleLoad)
-    }
-  }, [ebookDisplayName])
-
-  return (
-    <div className="bg-white">
-      <div className="mx-auto max-w-4xl px-6 py-16">
-        <h1 className="text-3xl font-bold tracking-tight text-gray-900 mb-4">
-          Download {ebookDisplayName}
-        </h1>
-        <p className="text-gray-600 mb-8">
-          Fill out the form below to receive your free eBook.
-        </p>
-
-        {/* Load the standalone HTML form in an iframe */}
-        <div className="max-w-md mx-auto">
-          <iframe
-            ref={iframeRef}
-            src={`data:text/html;charset=utf-8,${encodeURIComponent(`<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -50,6 +8,9 @@ function EbookContent() {
 </head>
 <body class="bg-white">
     <div class="mx-auto max-w-md px-6 py-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6 text-center">Download Your Ebook</h2>
+        
+        <!-- This is your EXACT working form -->
         <form
             id="webform886339000000817757"
             action="https://crm.zoho.eu/crm/WebToLeadForm"
@@ -57,12 +18,14 @@ function EbookContent() {
             method="POST"
             accept-charset="UTF-8"
         >
+            <!-- Required Zoho fields -->
             <input type="hidden" name="xnQsjsdp" value="aff032ea392f9d32ea3429774425c9b50b79b3c7d8a18f2625e6a7a20ecae6a1">
             <input type="hidden" name="zc_gad" value="">
             <input type="hidden" name="xmIwtLD" value="381b878b5ea1f6a1ece3aa9488fb1f97d8f4e37038d4049edf5b85849c23ca28ff8cd03030fee032ee0bb2373de53db2">
             <input type="hidden" name="actionType" value="TGVhZHM=">
             <input type="hidden" name="returnURL" value="https://www.growtoprime.com/thanks">
             
+            <!-- Form fields with Tailwind styling -->
             <div class="mb-4">
                 <label for="Company" class="block text-sm font-medium text-gray-700 mb-1">Company *</label>
                 <input type="text" id="Company" name="Company" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
@@ -90,7 +53,7 @@ function EbookContent() {
             
             <div class="mb-4">
                 <label for="LEADCF24" class="block text-sm font-medium text-gray-700 mb-1">Ebook Name</label>
-                <input type="text" id="LEADCF24" name="LEADCF24" value="${ebookDisplayName}" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <input type="text" id="LEADCF24" name="LEADCF24" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
             </div>
             
             <div class="mb-4">
@@ -107,6 +70,7 @@ function EbookContent() {
                 </label>
             </div>
             
+            <!-- Honeypot (anti-bot) -->
             <input type="text" name="aG9uZXlwb3Q" style="display:none;" value="">
             
             <button type="submit" class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
@@ -114,24 +78,20 @@ function EbookContent() {
             </button>
         </form>
     </div>
-</body>
-</html>`)}`}
-            width="100%"
-            height="600"
-            frameBorder="0"
-            style={{ border: 'none' }}
-            title="Ebook Download Form"
-          />
-        </div>
-      </div>
-    </div>
-  )
-}
 
-export default function EbookPage() {
-  return (
-    <Suspense fallback={null}>
-      <EbookContent />
-    </Suspense>
-  )
-}
+    <script>
+        // Get ebook name from parent window if in iframe
+        window.addEventListener('message', function(event) {
+            if (event.data && event.data.type === 'setEbookName') {
+                document.getElementById('LEADCF24').value = event.data.value;
+            }
+        });
+
+        // Set default ebook name from URL params
+        const urlParams = new URLSearchParams(window.location.search);
+        const ebookName = urlParams.get('ebook') || 'AI Content Generation Guide';
+        const ebookDisplayName = ebookName.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+        document.getElementById('LEADCF24').value = ebookDisplayName;
+    </script>
+</body>
+</html>
