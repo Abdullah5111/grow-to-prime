@@ -66,52 +66,52 @@ function EbookContent() {
             <div class="mb-4">
                 <label for="Company" class="block text-sm font-medium text-gray-700 mb-1">Company *</label>
                 <input type="text" id="Company" name="Company" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-            </div>
-            
+    </div>
+
             <div class="mb-4">
                 <label for="First_Name" class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
                 <input type="text" id="First_Name" name="First Name" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-            </div>
-            
+    </div>
+
             <div class="mb-4">
                 <label for="Last_Name" class="block text-sm font-medium text-gray-700 mb-1">Last Name *</label>
                 <input type="text" id="Last_Name" name="Last Name" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-            </div>
-            
+    </div>
+
             <div class="mb-4">
                 <label for="Email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
                 <input type="email" id="Email" name="Email" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-            </div>
-            
+    </div>
+
             <div class="mb-4">
                 <label for="Mobile" class="block text-sm font-medium text-gray-700 mb-1">Mobile</label>
                 <input type="text" id="Mobile" name="Mobile" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-            </div>
-            
+    </div>
+
             <div class="mb-4">
                 <label for="LEADCF24" class="block text-sm font-medium text-gray-700 mb-1">Ebook Name</label>
                 <input type="text" id="LEADCF24" name="LEADCF24" value="${ebookDisplayName}" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-            </div>
-            
+    </div>
+
             <div class="mb-4">
                 <label for="LEADCF25" class="block text-sm font-medium text-gray-700 mb-1">Content Type</label>
                 <select id="LEADCF25" name="LEADCF25" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <option value="E-book">E-book</option>
-                </select>
-            </div>
+                  <option value="E-book">E-book</option>
+        </select>
+          </div>
             
             <div class="mb-6">
                 <label class="flex items-center">
                     <input type="checkbox" name="privacyConsent" required class="mr-2">
                     <span class="text-sm text-gray-700">I accept the privacy policy</span>
-                </label>
+            </label>
             </div>
             
             <input type="text" name="aG9uZXlwb3Q" style="display:none;" value="">
             
             <button type="submit" class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
                 Submit
-            </button>
+                </button>
         </form>
     </div>
 </body>
